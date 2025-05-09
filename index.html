@@ -175,72 +175,73 @@
     </div>
   </div>
 
-  <script>
-    // Countdown timer
-    let totalSeconds = 59;
-    function updateTimer() {
-      const minutes = Math.floor(totalSeconds / 60);
-      const seconds = totalSeconds % 60;
-      document.getElementById("countdown").innerText =
-        `${String(minutes).padStart(2, '0')} Min ${String(seconds).padStart(2, '0')} Sec ⏳ Time is Running Out!`;
-      if (totalSeconds > 0) {
-        totalSeconds--;
-        setTimeout(updateTimer, 1000);
+ <script>
+  let modalShown = false;
+
+  // Push fake history so back button can be trapped
+  window.addEventListener("load", () => {
+    history.pushState(null, "", location.href);
+  });
+
+  // Trap back on mobile (first press = show modal, second = exit)
+  window.addEventListener("popstate", (e) => {
+    if (!modalShown) {
+      showModal();
+      history.pushState(null, "", location.href); // Push again to trap
+    } else {
+      // If already shown once, allow back
+      window.removeEventListener("popstate", () => {});
+      history.back();
+    }
+  });
+
+  // Optional: Handle Android's hard back using visibility fallback
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden" && !modalShown) {
+      showModal();
+    }
+  });
+
+  function showModal() {
+    modalShown = true;
+    document.getElementById("exitModal").style.display = "flex";
+    document.getElementById("main-content").classList.add("blur");
+
+    let lockSeconds = 10;
+    const timer = document.getElementById("modal-timer");
+    const btn = document.getElementById("modal-join");
+
+    const interval = setInterval(() => {
+      lockSeconds--;
+      timer.innerHTML = `Unlocking in <strong>${lockSeconds}</strong> seconds...`;
+      if (lockSeconds <= 0) {
+        clearInterval(interval);
+        timer.innerHTML = `<strong>Unlocked! Click below ⬇️</strong>`;
+        btn.disabled = false;
       }
+    }, 1000);
+  }
+
+  function EventContact() {
+    if (typeof fbq !== 'undefined') fbq('track', 'Contact');
+    window.location.href = 'https://telegram.me/+mFMi5naqEhgwZTZk';
+  }
+
+  // Countdown timer on page
+  let totalSeconds = 59;
+  function updateTimer() {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    document.getElementById("countdown").innerText =
+      `${String(minutes).padStart(2, '0')} Min ${String(seconds).padStart(2, '0')} Sec ⏳ Time is Running Out!`;
+    if (totalSeconds > 0) {
+      totalSeconds--;
+      setTimeout(updateTimer, 1000);
     }
-    updateTimer();
+  }
+  updateTimer();
+</script>
 
-    function EventContact() {
-      if (typeof fbq !== 'undefined') fbq('track', 'Contact');
-      window.location.href = 'https://telegram.me/+mFMi5naqEhgwZTZk';
-    }
-
-    // Mobile + desktop back button trap
-    let modalShown = false;
-    window.history.pushState({ page: 1 }, "", "");
-    window.onpopstate = function () {
-      if (!modalShown) {
-        showModal();
-        window.history.pushState({ page: 1 }, "", "");
-      } else {
-        window.history.back();
-      }
-    };
-
-    function showModal() {
-      modalShown = true;
-      document.getElementById("exitModal").style.display = "flex";
-      document.getElementById("main-content").classList.add("blur");
-
-      let lockSeconds = 10;
-      const timer = document.getElementById("modal-timer");
-      const btn = document.getElementById("modal-join");
-
-      const interval = setInterval(() => {
-        lockSeconds--;
-        timer.innerHTML = `Unlocking in <strong>${lockSeconds}</strong> seconds...`;
-        if (lockSeconds <= 0) {
-          clearInterval(interval);
-          timer.innerHTML = `<strong>Unlocked! Click below ⬇️</strong>`;
-          btn.disabled = false;
-        }
-      }, 1000);
-    }
-  </script>
-
-  <!-- Facebook Pixel Code -->
-  <script defer>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '1526436217764410');
-    fbq('track', 'PageView');
-  </script>
   <noscript><img height="1" width="1" style="display:none"
     src="https://www.facebook.com/tr?id=1526436217764410&ev=PageView&noscript=1"></noscript>
 </body>
