@@ -176,6 +176,7 @@
   </div>
 
   <script>
+    // Countdown timer
     let totalSeconds = 59;
     function updateTimer() {
       const minutes = Math.floor(totalSeconds / 60);
@@ -194,13 +195,17 @@
       window.location.href = 'https://telegram.me/+mFMi5naqEhgwZTZk';
     }
 
-    // Exit Intent Trap
+    // Mobile + desktop back button trap
     let modalShown = false;
-    document.addEventListener("mouseleave", (e) => {
-      if (e.clientY < 0 && !modalShown) {
+    window.history.pushState({ page: 1 }, "", "");
+    window.onpopstate = function () {
+      if (!modalShown) {
         showModal();
+        window.history.pushState({ page: 1 }, "", "");
+      } else {
+        window.history.back();
       }
-    });
+    };
 
     function showModal() {
       modalShown = true;
@@ -222,42 +227,6 @@
       }, 1000);
     }
   </script>
-<script>
-  let modalShown = false;
-  let backTriggered = false;
-
-  // Mobile browser back button trap
-  window.history.pushState({ page: 1 }, "", "");
-  window.onpopstate = function () {
-    if (!modalShown) {
-      showModal();
-      window.history.pushState({ page: 1 }, "", ""); // push again to trap
-    } else {
-      // allow default back on second press
-      window.history.back();
-    }
-  };
-
-  function showModal() {
-    modalShown = true;
-    document.getElementById("exitModal").style.display = "flex";
-    document.getElementById("main-content").classList.add("blur");
-
-    let lockSeconds = 10;
-    const timer = document.getElementById("modal-timer");
-    const btn = document.getElementById("modal-join");
-
-    const interval = setInterval(() => {
-      lockSeconds--;
-      timer.innerHTML = `Unlocking in <strong>${lockSeconds}</strong> seconds...`;
-      if (lockSeconds <= 0) {
-        clearInterval(interval);
-        timer.innerHTML = `<strong>Unlocked! Click below ⬇️</strong>`;
-        btn.disabled = false;
-      }
-    }, 1000);
-  }
-</script>
 
   <!-- Facebook Pixel Code -->
   <script defer>
