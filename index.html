@@ -178,27 +178,42 @@
  <script>
   let modalShown = false;
 
-  // Push fake history so back button can be trapped
-  window.addEventListener("load", () => {
-    history.pushState(null, "", location.href);
-  });
+  // Countdown Timer Setup
+  let totalSeconds = 59;
+  function updateTimer() {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    document.getElementById("countdown").innerText =
+      `${String(minutes).padStart(2, '0')} Min ${String(seconds).padStart(2, '0')} Sec ⏳ Time is Running Out!`;
+    if (totalSeconds > 0) {
+      totalSeconds--;
+      setTimeout(updateTimer, 1000);
+    }
+  }
+  updateTimer();
 
-  // Trap back on mobile (first press = show modal, second = exit)
-  window.addEventListener("popstate", (e) => {
-    if (!modalShown) {
-      showModal();
-      history.pushState(null, "", location.href); // Push again to trap
+  // Telegram Join Button Handler
+  function EventContact() {
+    sessionStorage.setItem("joinedTelegram", "yes");
+    if (typeof fbq !== 'undefined') fbq('track', 'Contact');
+    window.location.href = 'https://telegram.me/+mFMi5naqEhgwZTZk';
+  }
+
+  // Push fake history so back can be trapped
+  window.addEventListener("load", () => {
+    if (!sessionStorage.getItem("joinedTelegram")) {
+      history.pushState(null, "", location.href);
     } else {
-      // If already shown once, allow back
-      window.removeEventListener("popstate", () => {});
-      history.back();
+      // clear the flag if returned
+      sessionStorage.removeItem("joinedTelegram");
     }
   });
 
-  // Optional: Handle Android's hard back using visibility fallback
-  document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "hidden" && !modalShown) {
+  // Back Trap Only If Not from Telegram
+  window.addEventListener("popstate", (e) => {
+    if (!modalShown && !sessionStorage.getItem("joinedTelegram")) {
       showModal();
+      history.pushState(null, "", location.href);
     }
   });
 
@@ -221,26 +236,8 @@
       }
     }, 1000);
   }
-
-  function EventContact() {
-    if (typeof fbq !== 'undefined') fbq('track', 'Contact');
-    window.location.href = 'https://telegram.me/+mFMi5naqEhgwZTZk';
-  }
-
-  // Countdown timer on page
-  let totalSeconds = 59;
-  function updateTimer() {
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    document.getElementById("countdown").innerText =
-      `${String(minutes).padStart(2, '0')} Min ${String(seconds).padStart(2, '0')} Sec ⏳ Time is Running Out!`;
-    if (totalSeconds > 0) {
-      totalSeconds--;
-      setTimeout(updateTimer, 1000);
-    }
-  }
-  updateTimer();
 </script>
+
 
   <noscript><img height="1" width="1" style="display:none"
     src="https://www.facebook.com/tr?id=1526436217764410&ev=PageView&noscript=1"></noscript>
